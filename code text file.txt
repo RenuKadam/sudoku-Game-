@@ -1,0 +1,818 @@
+##front_renu
+
+import tkinter
+from tkinter import *
+import subprocess
+
+
+def register_pg():
+    subprocess.Popen(['PYTHON','register.py'])
+
+def admin_pg():
+    subprocess.Popen(['PYTHON','admin.py'])
+
+def user_pg():
+    subprocess.Popen(['python','USER.py']) 
+
+root = Tk()
+root.title("Suduko Game")
+root.geometry("1500x900")
+
+header = Label(root,text="SUDUKO GAME",font=("Arail",23,"bold"),bg="green")
+header.place(x="600",y="5")
+
+rules = Label(root,text="RULES FOR SUDUKO :-",font=("Arail",15,"bold"))
+rules.place(x="30",y="50")
+
+rules_line1 = Label(root, text="1. Each row must contain all numbers from 1 to 9, with no repetition.",font=("Arial",14,"bold"),fg="blue")
+rules_line1.place(x="50",y="100")
+
+rules_line1 = Label(root, text="2. Each column must contain all numbers from 1 to 9, with no repetition.",font=("Arial",14,"bold"),fg="blue")
+rules_line1.place(x="50",y="140")
+
+rules_line1 = Label(root, text="3. Each 3x3 box (subgrid) must contain all numbers from 1 to 9, with no repetition.",font=("Arial",14,"bold"),fg="blue")
+rules_line1.place(x="50",y="180")
+
+new_user = Label(root,text="If new user please register , else login",font=("Arial",14,"bold"))
+new_user.place(x="30",y="240")
+
+reg_btn = Button(root, text="Register",font=("Arial",14,"bold"),bg="#9CF2BA",command=register_pg)
+reg_btn.place(x="400",y="235")
+
+log = Label(root,text="Login as : ",font=("Arial",17,"bold"))
+log.place(x="660",y="340")
+
+admin_btn = Button(root, text="Admin Login",font=("Arial",18,"bold"),bg="#C293F5",command=admin_pg)
+admin_btn.place(x="640",y="400")
+
+user_btn = Button(root, text="User Login",font=("Arial",18,"bold"),bg="#C293F5",command=user_pg)
+user_btn.place(x="650",y="550")
+
+
+root.mainloop()
+
+##admin.py
+
+from tkinter import *
+from tkinter import messagebox
+import subprocess
+
+
+def login():
+    username = user.get()
+    password = passw.get()
+    
+    if username == 'admin' and password == 'admin123':
+        var = messagebox.showinfo('Admin login', 'Login Successfully')
+        # if var:
+        #     admin_mode()
+    elif username == '' and password == '':
+        messagebox.showerror('Admin login', 'Blank username and password not allowed')
+    else:
+        messagebox.showerror('Admin login', 'Incorrect Username and Password')
+
+admin_log = Tk()
+admin_log.title("Admin Login")
+admin_log.geometry("1366x768")
+admin_log.configure(bg="#F9B474")
+
+# Create a new frame
+frame = Frame(admin_log, bg="white")  # Set the background color as needed
+frame.place(relx=0.2, rely=0.2, relwidth=0.57, relheight=0.6)
+
+header_label = Label(frame, text="ADMIN LOGIN PAGE", font=("times new roman", 20, "bold"),bg="white")
+header_label.place(x=260,y=40)
+user_label = Label(frame, text="USERNAME :", font=("times new roman", 18, "bold"),bg="white")
+user_label.place(x=160,y=150)
+pass_label = Label(frame, text="PASSWORD :", font=("times new roman", 18, "bold"),bg="white")
+pass_label.place(x=160,y=250)
+
+# Create entry fields
+user = Entry(frame, font=("times new roman", 15, "bold"),bg="#b8b6b6" )
+user.place(x=400,y=152)
+passw = Entry(frame, font=("times new roman", 15, "bold"), show='*', bg='#b8b6b6')
+passw.place(x=400,y=252)
+
+# Create login button
+log_but = Button(frame, text="LOGIN", font=("times new roman", 14, "bold"), bg='#b8b6b6', bd=3, command=login)
+log_but.place(x=310,y=340)
+
+admin_log.mainloop()
+
+##admin_mode.py
+
+from tkinter import *
+from tkinter import messagebox
+import sqlite3
+
+
+root = Tk()
+root.title("User mode")
+root.geometry("650x500")
+root.configure(bg="#30613b")
+
+def players():
+    display_win = Tk()
+    display_win.title("Display Data")
+    display_win.geometry("1100x700")
+
+    #databases
+    # create a db or connect to one 
+    connection = sqlite3.connect('register_1.db')
+
+    # cursor made
+    mycursor = connection.cursor()
+    
+    mycursor.execute("SELECT * FROM user")
+    records = mycursor.fetchall()
+    
+     # Manually specify column names
+    columns = ['userid', 'name', 'age', 'contact']
+    
+    k=0
+    for column in columns:
+        header = Label(display_win, width=10, fg="black", text=column, anchor="w" )
+        header.grid(row=0,column=k)
+        k=k+1
+        
+    i=1
+    for record in records:
+        for j in range(len(record)):
+          e=Label(display_win, width=10,fg="blue",text=record[j], anchor="w")
+          e.grid(row=i,column=j)
+        i=i+1
+        
+    # commit changes
+    connection.commit()
+
+    # close connection
+    connection.close()
+    
+    
+    
+def score_board():
+    display_win = Tk()
+    display_win.title("Display Data")
+    display_win.geometry("500x500")
+
+    #databases
+    # create a db or connect to one 
+    connection = sqlite3.connect('sudoku.db')
+
+    # cursor made
+    mycursor = connection.cursor()
+    
+    mycursor.execute("SELECT * FROM game")
+    records = mycursor.fetchall()
+    
+     # Manually specify column names
+    columns = ['gameid', 'userid', 'score']
+    
+    k=0
+    for column in columns:
+        header = Label(display_win, width=10, fg="black", text=column, anchor="w" )
+        header.grid(row=0,column=k)
+        k=k+1
+        
+    i=1
+    for record in records:
+        for j in range(len(record)):
+          e= Label(display_win, width=10,fg="blue",text=record[j], anchor="w")
+          e.grid(row=i,column=j)
+        i=i+1
+        
+    # commit changes
+    connection.commit()
+
+    # close connection
+    connection.close()
+    
+    display_win.mainloop()
+    
+def delete():
+     global display_win1        
+     display_win1 = Tk()
+     display_win1.title("SUDOKU")
+     display_win1.geometry("450x650")
+     # database
+     # create a db or connect to one 
+     connection = sqlite3.connect('register_1.db')
+     # cursor made
+     mycursor = connection.cursor()
+    
+     mycursor.execute("SELECT * FROM user")
+     records = mycursor.fetchall()
+    
+     head = Label(display_win1, text="PLAYERS DETAILS",anchor="center",font=("Arial",20,"bold"))
+     head.grid(row=0,columnspan=14)
+     
+     # column names
+     columns = ['User Id', 'Name' ,'Age', 'Contact']
+
+     k=0
+     for column in columns:
+        header = Label(display_win1, width=12, fg="black", text=column, anchor="center", font=("Arial",10,"bold") )
+        header.grid(row=1,column=k)
+        k=k+1
+        
+     i=2
+     for record in records:
+        for j in range(len(record)):
+           e=Label(display_win1, width=12,fg="blue",text=record[j], anchor="center",font=("Arial",10,"bold"))
+           e.grid(row=i,column=j)
+        # adding delete sign to button in each row
+        f=Button(display_win1,text="X",bg="red",fg="white",command=lambda d=record[0], fid=record[2]: del_record(d,fid),font=("Arial", 10))
+        f.grid(row=i,column=j+1)
+        i=i+1
+        
+     # commit changes
+     connection.commit()
+    
+     # close connection
+     connection.close()
+     
+     display_win1.mainloop()
+
+def del_record(bid,fid):
+    global display_win1 
+    var = messagebox.askyesnocancel(master = display_win1, title="Delete ?",message="Delete Record of Booking Id : "+ str(bid),icon="warning",default="no")
+    if var:
+       # create a db or connect to one 
+       connection = sqlite3.connect('register_1.db')
+       # cursor made
+       mycursor = connection.cursor()
+    
+       result = mycursor.execute("DELETE FROM user WHERE userid="+ str(bid))
+       messagebox.showerror(master= display_win1, title="Deleted",message="No. of records deleted: "+ str(result.rowcount)) 
+       
+       # commit changes
+       connection.commit()
+    
+       # close connection
+       connection.close()
+       
+       display_win1.destroy()
+            
+       delete()
+       
+       display_win1.mainloop()
+       
+header_label = Label(root, text="SUDOKU GAME", font=("times new roman", 23, "bold"),fg="white",bg="#30613b")
+header_label.place(x=210,y=10)
+
+# Create login button
+add_but = Button(root, text="VIEW PLAYERS", font=("times new roman", 14, "bold"), bg='white', bd=3,command=players)
+add_but.place(x=270,y=140)
+
+add_but = Button(root, text="DELETE PLAYERS", font=("times new roman", 14, "bold"), bg='white', bd=3,command=delete)
+add_but.place(x=260,y=240)
+
+view_but = Button(root, text="VIEW SCOREBOARD", font=("times new roman", 14, "bold"), bg='#b8b6b6', bd=3,command=score_board)
+view_but.place(x=250,y=340)
+
+
+root.mainloop()
+
+##register.py
+
+from tkinter import *
+from tkinter import messagebox
+import subprocess
+import sqlite3
+import sys
+import os
+
+
+def reg_save():
+    name = name_e.get()
+    age = age_e.get()
+    contact = cont_e.get()
+    
+    if name == '' and age == '' and contact == '':
+        messagebox.showerror('error','Blank entry not allowed')
+    else:
+        
+    # # database
+    # # create
+     connection = sqlite3.connect('register_1.db')
+
+    # cursor made
+     mycursor = connection.cursor()
+     
+     mycursor.execute("""CREATE TABLE IF NOT EXISTS user(
+                  userid INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  name TEXT, 
+                  age INTEGER,
+                  contact INTEGER 
+      )""")
+    
+    # insert into table      
+     mycursor.execute("INSERT INTO user (name, age, contact) VALUES (?, ?, ?)",(name_e.get(),age_e.get(),cont_e.get()))
+     
+    # commit changes
+     connection.commit()
+
+    # close connection
+     connection.close()
+     
+     show(name_e.get(),age_e.get(),cont_e.get())
+      
+     name_e.delete(0,END)
+     age_e.delete(0,END)
+     cont_e.delete(0,END)
+      
+      
+     
+def show(name, age, contact):
+    
+    # # database
+    # # create
+     connection = sqlite3.connect('register_1.db')
+
+    # cursor made
+     mycursor = connection.cursor()
+
+    # insert into table      
+     mycursor.execute("SELECT userid FROM user WHERE name=? AND age=? AND contact=?",(name,age,contact))
+     result = mycursor.fetchone()
+     
+     id = result[0]
+    # commit changes
+     connection.commit()
+
+    # close connection
+     connection.close()
+    
+     var = messagebox.showinfo('resgister','Registered Successfully,\nYour user id is :'+str(id)+"\nPlease save for future reference")
+     if var:
+       continue_label = Label(frame,text="Click on continue to Login")
+       continue_label.place(x="100",y="350")
+       
+       log_btn = Button(frame,text="login",command=user_log)
+       log_btn.place(x="300",y="350")
+
+
+def user_log():
+    subprocess.Popen(['python','USER.py'])
+
+admin_log = Tk()
+admin_log.title("REGISTER")
+admin_log.geometry("1366x768")
+admin_log.configure(bg="#7CC7F9")
+
+# Create a new frame
+frame = Frame(admin_log, bg="white")  # Set the background color as needed
+frame.place(relx=0.2, rely=0.2, relwidth=0.57, relheight=0.6)
+
+header_label = Label(frame, text="REGISTER", font=("times new roman", 20, "bold"),bg="white")
+header_label.place(x=300,y=40)
+N_label = Label(frame, text="NAME :", font=("times new roman", 18, "bold"),bg="white")
+N_label.place(x=160,y=100)
+A_label = Label(frame, text="AGE :", font=("times new roman", 18, "bold"),bg="white")
+A_label.place(x=160,y=160)
+PHN_label = Label(frame, text="CONTACT NO. :", font=("times new roman", 18, "bold"),bg="white")
+PHN_label.place(x=160,y=220)
+
+
+# Create entry fields
+name_e = Entry(frame, font=("times new roman", 15, "bold"),bg="#C1E0FA" )
+name_e.place(x=400,y=102)
+age_e = Entry(frame, font=("times new roman", 15, "bold"), bg='#C1E0FA')
+age_e.place(x=400,y=162)
+cont_e = Entry(frame, font=("times new roman", 15, "bold"), bg='#C1E0FA')
+cont_e.place(x=400,y=222)
+
+# Create login button
+reg_but = Button(frame, text="REGISTER", font=("times new roman", 14, "bold"), bg='#b8b6b6', bd=3, command=reg_save)
+reg_but.place(x=310,y=300)
+
+admin_log.mainloop()
+
+##user.py
+
+from tkinter import *
+from tkinter import messagebox
+import subprocess
+import sqlite3
+
+userroot = Tk()
+userroot.title("User Login")
+userroot.geometry("1366x768")
+userroot.configure(bg="#F9B474")
+
+# Create a new frame
+frame = Frame(userroot, bg="white")  
+frame.place(relx=0.25, rely=0.15, relwidth=0.57, relheight=0.6)
+
+
+def login():
+    username = user.get()
+    password = passw.get()
+    
+    #database access 
+    # create a db or connect to one 
+    connection = sqlite3.connect('register_1.db')
+
+    # cursor made
+    mycursor = connection.cursor()
+    
+    mycursor.execute("SELECT name FROM user WHERE userid=?",(user.get()))
+    res = mycursor.fetchone()
+    
+    result = res[0]
+    
+    if password == result:
+       var = messagebox.showinfo('login', 'Login Successfully')
+       if var:
+           user_mode()
+    elif username == '' and password == '':
+       messagebox.showerror('login', 'Blank user ID and name not allowed')
+    else:
+       messagebox.showerror('login', 'Incorrect User ID and name')
+       
+    # commit changes
+    connection.commit()
+
+     # close connection
+    connection.close()
+
+def register():
+    subprocess.Popen(['python','register.py'])
+
+def user_mode():
+    subprocess.Popen(['python','user_mode.py',str(user.get())])
+    userroot.destroy()
+    
+# number validation
+def validate_numeric(value):
+    if not value:
+        return True 
+    if not value.isdigit():
+        messagebox.showerror('Error', 'Please enter a valid numeric value.')
+        return False
+    return True
+
+numeric = frame.register(validate_numeric)
+
+# Password 
+def validate_password(value):
+    if not value:
+        return True 
+
+    if len(value) < 6:
+        messagebox.showerror('Error', 'Password too short. Must be at least 6 characters.')
+        return False
+
+    has_digit = False
+    for char in value:
+        if char.isdigit():
+            has_digit = True
+            break
+    if not has_digit:
+        messagebox.showerror('Error', 'Password must include a number.')
+        return False
+
+    has_upper = False
+    for char in value:
+        if char.isupper():
+            has_upper = True
+            break
+    if not has_upper:
+        messagebox.showerror('Error', 'Password must include an uppercase letter.')
+        return False
+    
+    has_lower = False
+    for char in value:
+        if char.islower():
+            has_lower = True
+            break
+    if not has_lower:
+        messagebox.showerror('Error', 'Password must include a lowercase letter.')
+        return False
+
+    special_characters = "@#$%^&_*"
+    has_special = False
+    for char in value:
+        if char in special_characters:
+            has_special = True
+            break
+    if not has_special:
+        messagebox.showerror('Error', 'Password must include a special character (@, #, $, %, ^, &).')
+        return False
+
+    return True
+
+password_valid = frame.register(validate_password)
+
+#label   
+header_label = Label(frame, text="USER LOGIN PAGE", font=("times new roman", 20, "bold"),bg="white")
+header_label.place(x=260,y=40)
+user_label = Label(frame, text="USER ID :", font=("times new roman", 18, "bold"),bg="white")
+user_label.place(x=160,y=150)
+pass_label = Label(frame, text="NAME :", font=("times new roman", 18, "bold"),bg="white")
+pass_label.place(x=160,y=250)
+
+# Entry
+user = Entry(frame, font=("times new roman", 15, "bold"),bg="#f7e1e6",validate="focusout", validatecommand=(numeric,'%P'))
+user.place(x=400,y=152)
+passw = Entry(frame, font=("times new roman", 15, "bold"), bg='#f7e1e6')
+passw.place(x=400,y=252)
+
+# Buttons
+log_but = Button(frame, text="LOGIN", font=("times new roman", 14, "bold"), bg='#f7e1e6', bd=3, command=login)
+log_but.place(x=310,y=340)
+reg_label = Label(frame, text="If new user , please register by clicking on register. ",font=("times new roman", 14, "bold"),bg="white")
+reg_label.place(x=100,y=400)
+reg_btn = Button(frame, text="Register", font=("times new roman", 15, "bold"), bd=3 , bg='#f7e1e6', command=register)
+reg_btn.place(x=550,y=390)
+
+userroot.mainloop()
+
+##user_mode.py
+
+from tkinter import *
+from tkinter import messagebox
+import subprocess
+import sqlite3
+import sys
+
+global userid
+userid = sys.argv[1]
+print(userid)
+
+root = Tk()
+root.title("User mode")
+root.geometry("650x500")
+root.configure(bg="#30613b")
+
+def play():
+    subprocess.Popen(['python','new.py',str(userid)])
+    
+def score_board():
+    display_win = Tk()
+    display_win.title("Display Data")
+    display_win.geometry("400x500")
+
+    #databases
+    # create a db or connect to one 
+    connection = sqlite3.connect('sudoku.db')
+
+    # cursor made
+    mycursor = connection.cursor()
+    
+    mycursor.execute("SELECT * FROM game WHERE userid=?",(userid))
+    records = mycursor.fetchall()
+    
+    header_label = Label(display_win, text="SUDOKU SCOREBOARD", font=("times new roman", 14, "bold"))
+    header_label.grid(row=0,columnspan=14)
+    
+    # Manually specify column names
+    columns = ['gameid', 'userid', 'score']
+    
+    k=0
+    for column in columns:
+        header = Label(display_win, width=10, fg="black", text=column, anchor="w" )
+        header.grid(row=0,column=k)
+        k=k+1
+        
+    i=1
+    for record in records:
+        for j in range(len(record)):
+          e= Label(display_win, width=10,fg="blue",text=record[j], anchor="w")
+          e.grid(row=i,column=j)
+        i=i+1
+        
+    # commit changes
+    connection.commit()
+
+    # close connection
+    connection.close()
+    display_win.mainloop()
+       
+header_label = Label(root, text="SUDOKU GAME", font=("times new roman", 23, "bold"),fg="white",bg="#30613b")
+header_label.place(x=210,y=10)
+
+# Create login button
+add_but = Button(root, text="PLAY GAME", font=("times new roman", 14, "bold"), bg='white', bd=3,command=play)
+add_but.place(x=270,y=140)
+
+add_but = Button(root, text="SCORE BOARD", font=("times new roman", 14, "bold"), bg='white', bd=3,command=score_board)
+add_but.place(x=260,y=240)
+
+
+root.mainloop()
+
+##new.py
+
+import tkinter as tk
+import random
+from tkinter import messagebox
+import sys
+import sqlite3
+
+global userid
+userid = sys.argv[1]
+print(userid)
+
+class SudokuGUI:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Sudoku")
+        self.board = [[0]*9 for _ in range(9)]
+        self.solution = [[0]*9 for _ in range(9)]
+        self.selected_cell = None
+        self.time_elapsed = 0
+        self.timer_running = False  # Flag to control timer
+        self.timer_label = tk.Label(self.master, text="Time: 00:00")
+        self.timer_label.pack()
+        self.create_widgets()
+        
+    def create_widgets(self):
+        self.canvas = tk.Canvas(self.master, width=450, height=450, borderwidth=0, highlightthickness=0)
+        self.canvas.pack()
+        self.draw_board()
+        self.canvas.bind("<Button-1>", self.cell_clicked)
+
+        self.menu = tk.Menu(self.master)
+        self.master.config(menu=self.menu)
+
+        self.difficulty_menu = tk.Menu(self.menu)
+        self.menu.add_cascade(label="Difficulty", menu=self.difficulty_menu)
+        self.difficulty_menu.add_command(label="Easy", command=lambda: self.new_game("easy", 900))
+        self.difficulty_menu.add_command(label="Medium", command=lambda: self.new_game("medium", 720))
+        self.difficulty_menu.add_command(label="Hard", command=lambda: self.new_game("hard", 600))
+
+        self.menu.add_command(label="Clear", command=self.clear_board)
+        
+        self.menu.add_command(label="Submit", command=self.show_score)    
+
+        self.solve_button = tk.Button(self.master, text="Solve", command=self.solve)
+        self.solve_button.pack()
+        
+    def draw_board(self):
+        for i in range(10):
+            width = 2 if i % 3 == 0 else 1
+            self.canvas.create_line(50*i, 0, 50*i, 450, width=width)
+            self.canvas.create_line(0, 50*i, 450, 50*i, width=width)
+
+    def clear_board(self):
+        self.board = [[0]*9 for _ in range(9)]
+        self.canvas.delete("numbers")
+        self.timer_running = False  # Stop the timer 
+        self.time_elapsed = 0
+        self.update_timer()
+
+    def new_game(self, difficulty, countdown):
+        self.clear_board()
+        self.generate_puzzle()
+        self.fill_board(difficulty)
+        self.time_elapsed = countdown
+        self.timer_running = True  # Start the timer
+        self.update_timer()  # Start timer countdown
+
+    def generate_puzzle(self):
+        def solve(board):
+            empty_cell = find_empty_cell(board)
+            if not empty_cell:
+                return True
+            row, col = empty_cell
+            for num in random.sample(range(1, 10), 9):
+                if is_valid_move(board, num, (row, col)):
+                    board[row][col] = num
+                    if solve(board):
+                        return True
+                    board[row][col] = 0
+            return False
+
+        def find_empty_cell(board):
+            for i in range(9):
+                for j in range(9):
+                    if board[i][j] == 0:
+                        return (i, j)
+            return None
+
+        def is_valid_move(board, num, pos):
+            row, col = pos
+            if num in board[row]:
+                return False
+            if num in [board[i][col] for i in range(9)]:
+                return False
+            box_x, box_y = col // 3 * 3, row // 3 * 3
+            if num in [board[i][j] for i in range(box_y, box_y + 3) for j in range(box_x, box_x + 3)]:
+                return False
+            return True
+
+        self.board = [[0]*9 for _ in range(9)]
+        solve(self.board)
+        self.solution = [row[:] for row in self.board]
+
+    def fill_board(self, difficulty):
+        num_to_fill = {"easy": 30, "medium": 35, "hard": 45}
+        cells_to_empty = random.sample([(i, j) for i in range(9) for j in range(9)], num_to_fill[difficulty])
+        for cell in cells_to_empty:
+            self.board[cell[0]][cell[1]] = 0
+
+        for i in range(9):
+            for j in range(9):
+                if self.board[i][j] != 0:
+                    self.canvas.create_text(25 + j * 50, 25 + i * 50, text=str(self.board[i][j]), tags="numbers", font=("Arial", 20))
+
+    def solve(self):
+        self.clear_board()
+        for i in range(9):
+            for j in range(9):
+                self.canvas.create_text(25 + j * 50, 25 + i * 50, text=str(self.solution[i][j]), tags="numbers", font=("Arial", 20))
+
+    def submit_board(self, puzzle, solution):   
+        score = 0
+        for i in range(9):
+            for j in range(9):
+                if puzzle[i][j] == solution[i][j]:
+                    score += 1
+        return score
+
+    def show_score(self):
+        score = self.submit_board(self.board, self.solution)
+        var = messagebox.showinfo("Score", f"The score is: {score}")
+        if var:
+             # database
+            con = sqlite3.connect("sudoku.db")
+            cursor = con.cursor()
+            cursor.execute("""CREATE TABLE IF NOT EXISTS game(
+                  gameid INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  userid INTEGER,
+                  score INTEGER 
+            )""")
+            cursor.execute("INSERT INTO game(userid,score)VALUES(?,?)",(userid, score))
+            con.commit()
+            con.close()
+        self.clear_board()
+
+    def cell_clicked(self, event):
+        x, y = event.x, event.y
+        row, col = y // 50, x // 50
+        self.selected_cell = (row, col)
+
+        self.canvas.delete("highlight")
+        self.canvas.create_rectangle(col * 50, row * 50, (col + 1) * 50, (row + 1) * 50, outline="blue", tags="highlight")
+
+        for i in range(9):
+            for j in range(9):
+                if (i, j) != self.selected_cell:
+                    self.canvas.create_rectangle(j * 50, i * 50, (j + 1) * 50, (i + 1) * 50, outline="", tags="highlight")
+
+        self.canvas.focus_set()  # Set focus on the canvas
+        self.canvas.bind("<Key>", self.input_number)
+
+    def input_number(self, event):
+        if self.selected_cell:
+            try:
+                num = int(event.char)
+                if 1 <= num <= 9:
+                    row, col = self.selected_cell
+                    if self.is_valid_move(num, (row, col)):
+                        self.board[row][col] = num
+                        self.canvas.delete("numbers")
+                        for i in range(9):
+                            for j in range(9):
+                                if self.board[i][j] != 0:
+                                    self.canvas.create_text(25 + j * 50, 25 + i * 50, text=str(self.board[i][j]), tags="numbers", font=("Arial", 20))
+            except ValueError:
+                pass
+
+    def is_valid_move(self, num, pos):
+        row, col = pos
+        for i in range(9):
+            if self.board[i][col] == num and i != row:
+                return False
+            if self.board[row][i] == num and i != col:
+                return False
+        box_x, box_y = col // 3 * 3, row // 3 * 3
+        for i in range(box_y, box_y + 3):
+            for j in range(box_x, box_x + 3):
+                if self.board[i][j] == num and (i, j) != (row, col):
+                    return False
+        return True
+
+    def update_timer(self):
+        minutes = self.time_elapsed // 60
+        seconds = self.time_elapsed % 60
+        time_str = "{:02d}:{:02d}".format(minutes, seconds)
+        self.timer_label.config(text="Time: " + time_str)
+        
+        if self.time_elapsed > 0 and self.timer_running:  # Check if countdown has ended and timer is running
+            self.time_elapsed -= 1
+            self.master.after(1000, self.update_timer)
+        elif self.time_elapsed == 0 and self.timer_running:
+            self.timer_running = False
+            messagebox.showinfo('Timeout', 'Time is up!')
+            self.show_score()
+
+def main():
+    root = tk.Tk()
+    app = SudokuGUI(root)
+    root.mainloop()
+
+
+main()
+
